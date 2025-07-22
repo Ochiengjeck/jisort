@@ -145,8 +145,8 @@ Screenshots
 ### result:
 ![Assign Users Screen](screenshots/image6.png)
 
-### Task Details Screen:
-![Task Details Screen](screenshots/task_details.png)
+### Getting tasks:
+![Task Details Screen](screenshots/image5.png)
 
 ### Assign Users Screen:
 ![Assign Users Screen](screenshots/assign_users.png)
