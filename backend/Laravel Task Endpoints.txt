@@ -1,0 +1,543 @@
+#### 1. **Task Model**
+File: `app/Models/Task.php`
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Task extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'title',
+        'description',
+        'is_assigned',
+        'progress',
+        'status',
+        'created_by',
+    ];
+
+    protected $casts = [
+        'is_assigned' => 'boolean',
+        'progress' => 'integer',
+        'status' => 'string',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function assignedTo(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'task_user', 'task_id', 'user_id')
+                    ->withTimestamps();
+    }
+
+    public function activities(): HasMany
+    {
+        return $this->hasMany(Activity::class, 'task_id');
+    }
+}
+```
+
+#### 2. **Activity Model**
+File: `app/Models/Activity.php`
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Activity extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'task_id',
+        'description',
+        'created_by',
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    public function task(): BelongsTo
+    {
+        return $this->belongsTo(Task::class, 'task_id');
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+}
+```
+
+#### 3. **Task Migration**
+File: `database/migrations/2025_07_22_151723_create_tasks_table.php`
+
+```php
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('tasks', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->boolean('is_assigned')->default(false);
+            $table->integer('progress')->default(0);
+            $table->enum('status', ['pending', 'in_progress', 'completed'])->default('pending');
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('tasks');
+    }
+};
+```
+
+#### 4. **Activity Migration**
+File: `database/migrations/2025_07_22_151724_create_activities_table.php`
+
+```php
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('activities', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('task_id')->constrained('tasks')->onDelete('cascade');
+            $table->text('description');
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('activities');
+    }
+};
+```
+
+#### 5. **Pivot Table Migration (task_user)**
+File: `database/migrations/2025_07_22_151725_create_task_user_table.php`
+
+```php
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('task_user', function (Blueprint $table) {
+            $table->foreignId('task_id')->constrained('tasks')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->timestamps();
+            $table->primary(['task_id', 'user_id']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('task_user');
+    }
+};
+```
+
+#### 6. **Task Resource**
+File: `app/Http/Resources/TaskResource.php`
+
+```php
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class TaskResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'description' => $this->description,
+            'is_assigned' => $this->is_assigned,
+            'progress' => $this->progress,
+            'status' => $this->status,
+            'created_by' => new UserResource($this->createdBy),
+            'assigned_to' => UserResource::collection($this->assignedTo),
+            'activities' => ActivityResource::collection($this->activities),
+            'created_at' => $this->created_at->toIso8601String(),
+            'updated_at' => $this->updated_at->toIso8601String(),
+        ];
+    }
+}
+```
+
+#### 7. **Activity Resource**
+File: `app/Http/Resources/ActivityResource.php`
+
+```php
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class ActivityResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'task_id' => $this->task_id,
+            'description' => $this->description,
+            'created_by' => new UserResource($this->createdBy),
+            'created_at' => $this->created_at->toIso8601String(),
+            'updated_at' => $this->updated_at->toIso8601String(),
+        ];
+    }
+}
+```
+
+#### 8. **User Resource**
+File: `app/Http/Resources/UserResource.php`
+
+```php
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class UserResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'email' => $this->email,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'username' => $this->username,
+            'phone' => $this->phone,
+            'email_verified_at' => $this->email_verified_at,
+            'created_at' => $this->created_at->toIso8601String(),
+            'updated_at' => $this->updated_at->toIso8601String(),
+            'avatar' => $this->avatar,
+            'bio' => $this->bio,
+            'date_of_birth' => $this->date_of_birth,
+            'gender' => $this->gender,
+            'address' => $this->address,
+            'city' => $this->city,
+            'state' => $this->state,
+            'country' => $this->country,
+            'postal_code' => $this->postal_code,
+            'timezone' => $this->timezone,
+            'language' => $this->language,
+            'status' => $this->status,
+            'phone_verified_at' => $this->phone_verified_at,
+            'two_factor_enabled' => $this->two_factor_enabled,
+            'last_login_at' => $this->last_login_at,
+            'last_activity_at' => $this->last_activity_at,
+            'metadata' => $this->metadata,
+            'deleted_at' => $this->deleted_at,
+            'full_name' => $this->full_name,
+            'initials' => $this->initials,
+            'avatar_url' => $this->avatar_url,
+        ];
+    }
+}
+```
+
+#### 9. **Task Controller**
+File: `app/Http/Controllers/TaskController.php`
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Resources\TaskResource;
+use App\Models\Task;
+use App\Models\Activity;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+
+class TaskController extends Controller
+{
+    public function getTasks(Request $request)
+    {
+        $user = Auth::user();
+        $tasks = Task::where('created_by', $user->id)
+                     ->orWhereHas('assignedTo', function ($query) use ($user) {
+                         $query->where('user_id', $user->id);
+                     })
+                     ->with(['createdBy', 'assignedTo', 'activities.createdBy'])
+                     ->get();
+
+        return TaskResource::collection($tasks);
+    }
+
+    public function create(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'progress' => 'integer|min:0|max:100',
+            'status' => ['required', Rule::in(['pending', 'in_progress', 'completed'])],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $task = Task::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'progress' => $request->progress ?? 0,
+            'status' => $request->status,
+            'created_by' => Auth::user()->id,
+            'is_assigned' => false,
+        ]);
+
+        // Create initial activity
+        Activity::create([
+            'task_id' => $task->id,
+            'description' => 'Task created',
+            'created_by' => Auth::user()->id,
+        ]);
+
+        return new TaskResource($task->load(['createdBy', 'assignedTo', 'activities.createdBy']));
+    }
+
+    public function updateTask(Request $request, Task $task)
+    {
+        if ($task->created_by !== Auth::user()->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'title' => 'string|max:255',
+            'description' => 'nullable|string',
+            'progress' => 'integer|min:0|max:100',
+            'status' => [Rule::in(['pending', 'in_progress', 'completed'])],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $task->update($request->only(['title', 'description', 'progress', 'status']));
+
+        // Log activity for update
+        Activity::create([
+            'task_id' => $task->id,
+            'description' => 'Task updated',
+            'created_by' => Auth::user()->id,
+        ]);
+
+        return new TaskResource($task->load(['createdBy', 'assignedTo', 'activities.createdBy']));
+    }
+
+    public function delete(Task $task)
+    {
+        if ($task->created_by !== Auth::user()->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $task->delete();
+
+        // Log activity for deletion
+        Activity::create([
+            'task_id' => $task->id,
+            'description' => 'Task deleted',
+            'created_by' => Auth::user()->id,
+        ]);
+
+        return response()->json(['message' => 'Task deleted successfully']);
+    }
+
+    public function assign(Request $request, Task $task)
+    {
+        if ($task->created_by !== Auth::user()->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $task->assignedTo()->sync($request->user_ids);
+        $task->update(['is_assigned' => !empty($request->user_ids)]);
+
+        // Log activity for assignment
+        Activity::create([
+            'task_id' => $task->id,
+            'description' => 'Task assigned to users: ' . implode(', ', $request->user_ids),
+            'created_by' => Auth::user()->id,
+        ]);
+
+        return new TaskResource($task->load(['createdBy', 'assignedTo', 'activities.createdBy']));
+    }
+}
+```
+
+#### 10. **API Routes**
+File: `routes/api.php`
+
+```php
+<?php
+
+use App\Http\Controllers\TaskController;
+use Illuminate\Support\Facades\Route;
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('tasks')->group(function () {
+        Route::get('/', [TaskController::class, 'getTasks'])->name('tasks.get');
+        Route::post('/create', [TaskController::class, 'create'])->name('tasks.create');
+        Route::put('/{task}', [TaskController::class, 'updateTask'])->name('tasks.update');
+        Route::delete('/{task}', [TaskController::class, 'delete'])->name('tasks.delete');
+        Route::post('/{task}/assign', [TaskController::class, 'assign'])->name('tasks.assign');
+    });
+});
+```
+
+#### 11. **Update User Model (if not already defined)**
+File: `app/Models/User.php`
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Sanctum\HasApiTokens;
+
+class User extends Authenticatable
+{
+    use HasFactory, HasApiTokens;
+
+    protected $fillable = [
+        'first_name',
+        'last_name',
+        'username',
+        'email',
+        'phone',
+        'password',
+        'email_verified_at',
+        'avatar',
+        'bio',
+        'date_of_birth',
+        'gender',
+        'address',
+        'city',
+        'state',
+        'country',
+        'postal_code',
+        'timezone',
+        'language',
+        'status',
+        'phone_verified_at',
+        'two_factor_enabled',
+        'last_login_at',
+        'last_activity_at',
+        'metadata',
+        'deleted_at',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'phone_verified_at' => 'datetime',
+        'last_login_at' => 'datetime',
+        'last_activity_at' => 'datetime',
+        'two_factor_enabled' => 'boolean',
+        'deleted_at' => 'datetime',
+    ];
+
+    protected $appends = ['full_name', 'initials', 'avatar_url'];
+
+    public function tasksCreated(): HasMany
+    {
+        return $this->hasMany(Task::class, 'created_by');
+    }
+
+    public function tasksAssigned(): BelongsToMany
+    {
+        return $this->belongsToMany(Task::class, 'task_user', 'user_id', 'task_id')
+                    ->withTimestamps();
+    }
+
+    public function activities(): HasMany
+    {
+        return $this->hasMany(Activity::class, 'created_by');
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return trim("{$this->first_name} {$this->last_name}");
+    }
+
+    public function getInitialsAttribute(): string
+    {
+        return strtoupper(substr($this->first_name, 0, 1) . substr($this->last_name, 0, 1));
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        return $this->avatar ?? "https://ui-avatars.com/api/?name=" . urlencode($this->full_name) . "&background=random";
+    }
+}
+```
