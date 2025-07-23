@@ -134,7 +134,7 @@ flutter run
       <em>View all created tasks</em>
     </td>
     <td align="center">
-      <img src="screenshots/mytasks.png.png" width="250" alt="My Tasks"/>
+      <img src="screenshots/mytasks.png" width="250" alt="My Tasks"/>
       <br/>
       <strong>My Tasks</strong>
       <br/>
@@ -157,7 +157,7 @@ flutter run
       <em>Built-in date picker for scheduling</em>
     </td>
     <td align="center">
-      <img src="screenshots/taskdetails.png.png" width="250" alt="Task Details"/>
+      <img src="screenshots/taskdetails.png" width="250" alt="Task Details"/>
       <br/>
       <strong>Task Details</strong>
       <br/>
