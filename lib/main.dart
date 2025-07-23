@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jisort/UI%20design.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jisort/utils/app_theme.dart';
 import 'package:jisort/pages/auth/login.dart';
@@ -26,7 +27,7 @@ class MyApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
-      home: const LoginPage(),
+      home: const TaskListScreen(),
     );
   }
 }

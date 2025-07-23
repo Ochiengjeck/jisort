@@ -1,166 +1,356 @@
-To-Do App
-A Flutter-based to-do application for managing tasks with user authentication and task assignment features. The app integrates with a Laravel backend to provide a seamless experience for creating, updating, deleting, and assigning tasks to users. It supports light and dark themes and uses Riverpod for state management.
-Features
+# 🧹 Jisort - Smart Cleaning Task Management
 
-User Authentication: Login and sign-up functionality with email/username and password.
-Task Management:
-Create, update, and delete tasks.
-Assign tasks to multiple users.
-View task details, including progress, status, and activity logs.
+**Jisort** is a powerful Flutter-based cleaning service management application that streamlines task assignment, tracking, and collaboration between managers and cleaning staff. Built with modern architecture and seamless API integration, it transforms how cleaning services operate.
 
+## ✨ Key Features
 
-Theme Switching: Toggle between light and dark themes.
-Responsive UI: Clean, Material Design-based interface for task management.
-State Management: Uses Riverpod for efficient state handling.
-API Integration: Communicates with a Laravel backend using Sanctum authentication.
+🔐 **Secure Authentication**
+- Email/username login with Laravel Sanctum
+- User registration and password recovery
+- Role-based access control
 
-Prerequisites
+📋 **Advanced Task Management**
+- Create, edit, and delete cleaning tasks
+- Set priorities and due dates
+- Track detailed activities within each task
+- Real-time progress monitoring
 
-Flutter: Version 3.0.0 or higher.
-Dart: Version 2.17.0 or higher.
-Node.js: For running the Laravel backend (if applicable).
-PHP: For the Laravel backend (version 8.0 or higher recommended).
-MySQL/PostgreSQL: For the backend database.
+👥 **Staff Assignment & Collaboration**
+- Assign tasks to multiple cleaning staff
+- Manage team member profiles
+- View individual and team workloads
+- Activity logging and completion tracking
 
-Setup Instructions
-1. Clone the Repository
-git clone https://github.com/your-username/to-do-app.git
-cd to-do-app
+🎨 **Modern User Experience**
+- Beautiful Material Design interface
+- Light and dark theme support
+- Responsive design for all devices
+- Intuitive navigation and workflows
 
-2. Install Flutter Dependencies
-Ensure Flutter is installed. Run the following to install dependencies:
+⚡ **Robust State Management**
+- Powered by Riverpod for efficient state handling
+- Real-time updates across the application
+- Optimized performance and memory usage
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+Ensure you have the following installed:
+- **Flutter SDK**: 3.0.0 or higher
+- **Dart**: 2.17.0 or higher
+- **PHP**: 8.0+ (for Laravel backend)
+- **MySQL** or **PostgreSQL**
+- **Composer** (PHP dependency manager)
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Ochiengjeck/jisort.git
+cd jisort
+```
+
+### 2. Install Dependencies
+
+```bash
 flutter pub get
+```
 
-The project requires the following dependencies in pubspec.yaml:
-dependencies:
-  flutter:
-    sdk: flutter
-  flutter_riverpod: ^2.0.0
-  http: ^0.13.0
-  flutter_dotenv: ^5.0.0
+### 3. Environment Configuration
 
-3. Configure Environment Variables
-Create a .env file in the root of the Flutter project and add the backend API URL:
-BASE_URL=http://your-backend-url:8000
+Create a `.env` file in the project root:
 
-Replace http://your-backend-url:8000 with your Laravel backend's URL. For local development, this is typically http://127.0.0.1:8000.
-Run the following to load the environment variables:
-flutter pub run build_runner build
+```env
+BASE_URL=http://127.0.0.1:8000
+```
 
-4. Set Up the Laravel Backend
+*Replace with your Laravel backend URL for production deployments.*
 
-Clone the backend repository (if separate) or ensure the backend is set up.
+### 4. Backend Setup
 
-Install PHP dependencies:
-composer install
+Set up your Laravel backend with the following database configuration:
 
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=jisort_db
+DB_USERNAME=root
+DB_PASSWORD=your_password
 
-Configure the backend .env file with your database credentials and Sanctum settings.
+SANCTUM_STATEFUL_DOMAINS=localhost,127.0.0.1:8000
+```
 
-Run migrations to set up the database:
+Run migrations and start the server:
+
+```bash
 php artisan migrate
-
-
-Start the Laravel development server:
 php artisan serve
+```
 
+### 5. Launch the App
 
-
-5. Run the Flutter App
-Ensure an emulator or physical device is connected, then run:
+```bash
 flutter run
+```
 
-The app will connect to the backend API specified in the .env file.
-Usage
+## 📸 Screenshots:
 
-Login/Sign Up: 
-Use the login screen to authenticate with a username/email and password.
-Sign up with your details to create a new account.
+### Authentication & Onboarding
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/login.png" width="250" alt="Login Screen"/>
+      <br/>
+      <strong>Login Screen</strong>
+      <br/>
+      <em>Secure authentication with email/password</em>
+    </td>
+    <td align="center">
+      <img src="screenshots/signup.png" width="250" alt="Sign Up Screen"/>
+      <br/>
+      <strong>Sign Up Screen</strong>
+      <br/>
+      <em>Quick registration for new users</em>
+    </td>
+    <td align="center">
+      <img src="screenshots/reset.png" width="250" alt="Password Reset"/>
+      <br/>
+      <strong>Password Reset</strong>
+      <br/>
+      <em>Easy password recovery process</em>
+    </td>
+  </tr>
+</table>
 
+### Task Management
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/alltasks.png" width="250" alt="All Tasks"/>
+      <br/>
+      <strong>All Tasks</strong>
+      <br/>
+      <em>View all created tasks</em>
+    </td>
+    <td align="center">
+      <img src="screenshots/mytasks.png.png" width="250" alt="My Tasks"/>
+      <br/>
+      <strong>My Tasks</strong>
+      <br/>
+      <em>Personal task dashboard</em>
+    </td>
+    <td align="center">
+      <img src="screenshots/addtask.png" width="250" alt="Add Task"/>
+      <br/>
+      <strong>Add Task</strong>
+      <br/>
+      <em>Create new tasks</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="screenshots/selectduedate.png" width="250" alt="Date Picker"/>
+      <br/>
+      <strong>Due Date Selection</strong>
+      <br/>
+      <em>Built-in date picker for scheduling</em>
+    </td>
+    <td align="center">
+      <img src="screenshots/taskdetails.png.png" width="250" alt="Task Details"/>
+      <br/>
+      <strong>Task Details</strong>
+      <br/>
+      <em>View complete task information</em>
+    </td>
+    <td align="center">
+      <img src="screenshots/edittask.png" width="250" alt="Edit Task"/>
+      <br/>
+      <strong>Edit Task</strong>
+      <br/>
+      <em>Modify existing tasks</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="screenshots/addstaff.png" width="250" alt="Add Staff"/>
+      <br/>
+      <strong>Add Staff</strong>
+      <br/>
+      <em>Register new staff members</em>
+    </td>
+    <td align="center">
+      <img src="screenshots/assigntasktoassistant.png" width="250" alt="Assign Task"/>
+      <br/>
+      <strong>Assign Task</strong>
+      <br/>
+      <em>Delegate tasks to assistants</em>
+    </td>
+    <td align="center">
+      <img src="screenshots/addtaskactivity.png" width="250" alt="Add Activity"/>
+      <br/>
+      <strong>Add Activity</strong>
+      <br/>
+      <em>Log task progress updates</em>
+    </td>
+  </tr>
+</table>
 
-Task List:
-View all tasks you created or are assigned to.
-Tap the Floating Action Button (FAB) to create a new task.
-Tap a task to view its details.
+### Backend Activities
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/image1.png" width="250" alt="Server Started"/>
+      <br/>
+      <strong>Server Started</strong>
+      <br/>
+      <em>Backend service initialization</em>
+    </td>
+    <td align="center">
+      <img src="screenshots/image2.png" width="250" alt="Database Set"/>
+      <br/>
+      <strong>Database Set</strong>
+      <br/>
+      <em>Database connection established</em>
+    </td>
+    <td align="center">
+      <img src="screenshots/image3.png" width="250" alt="Tasks Table"/>
+      <br/>
+      <strong>Tasks Table</strong>
+      <br/>
+      <em>Database structure for tasks</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="screenshots/image4.png" width="250" alt="Create Task"/>
+      <br/>
+      <strong>Create Task</strong>
+      <br/>
+      <em>Task creation endpoint</em>
+    </td>
+    <td align="center">
+      <img src="screenshots/image5.png" width="250" alt="Fetch Tasks"/>
+      <br/>
+      <strong>Fetch Tasks</strong>
+      <br/>
+      <em>Task retrieval endpoint</em>
+    </td>
+    <td align="center">
+      <img src="screenshots/image6.png" width="250" alt="Database Update"/>
+      <br/>
+      <strong>Database Update</strong>
+      <br/>
+      <em>Real-time data synchronization</em>
+    </td>
+  </tr>
+</table>
 
+> **Note**: To add screenshots to your repository, create a `screenshots/` folder in your project root and add the corresponding PNG/JPG files with the names referenced above.
+## 📱 User Journey
 
-Create Task:
-Enter a title, optional description, and select a status (pending, in_progress, completed).
-Submit to create the task.
+### Authentication Flow
+- **Login Screen**: Secure access with email/username and password
+- **Registration**: Quick signup process for new users  
+- **Password Recovery**: Easy password reset functionality
 
+### Task Management Workflow
+- **Task Creation**: Intuitive form with title, description, priority, and due date
+- **Activity Management**: Break down tasks into specific cleaning activities
+- **Assignment System**: Assign tasks to available cleaning staff
+- **Progress Tracking**: Visual progress bars and completion status
 
-Task Details:
-Edit the task's title, description, progress, or status.
-Delete the task using the delete button in the AppBar.
-Assign users to the task via the "Assign Users" button.
+### Staff Management
+- **Team Overview**: View all cleaning staff and their current assignments
+- **Add New Staff**: Simple process to onboard new team members  
+- **Workload Distribution**: Balanced task assignment across the team
 
+## 🏗️ Architecture
 
-Assign Users:
-Select users from the list to assign them to the task.
-Submit to update the task's assigned users.
-
-
-Theme Toggle:
-Use the theme toggle button in the task list's AppBar to switch between light and dark modes.
-
-
-
-Project Structure
-to-do-app/
+```
+jisort/
 ├── lib/
-│   ├── model/
-│   │   ├── tasks.dart          # Task and Activity models
-│   │   ├── user.dart           # User model
-│   ├── provider/
+│   ├── models/
+│   │   ├── task.dart           # Task and Activity data models
+│   │   └── user.dart           # User model and authentication
+│   ├── providers/
 │   │   ├── task_notifier.dart  # Task state management
-│   │   ├── user_notifier.dart  # Authentication state management
-│   │   ├── theme_notifier.dart # Theme state management
-│   │   ├── providers.dart      # Riverpod providers
+│   │   ├── user_notifier.dart  # User authentication state
+│   │   ├── theme_notifier.dart # Theme switching logic
+│   │   └── providers.dart      # Riverpod provider exports
 │   ├── services/
-│   │   ├── api_service.dart    # API service for backend communication
-│   ├── task_list_page.dart     # Main task list screen
-│   ├── task_create_page.dart   # Task creation form
-│   ├── task_details_page.dart  # Task details and edit screen
-│   ├── assign_users_page.dart  # User assignment screen
-├── .env                        # Environment variables
-├── pubspec.yaml                # Flutter dependencies
-└── README.md                   # This file
+│   │   └── api_service.dart    # Laravel API integration
+│   ├── screens/
+│   │   ├── task_list_page.dart     # Main dashboard
+│   │   ├── task_create_page.dart   # Task creation form
+│   │   ├── task_details_page.dart  # Task details and editing
+│   │   └── assign_users_page.dart  # Staff assignment
+│   └── main.dart
+├── assets/
+└── .env                        # Environment configuration
+```
 
-Screenshots
-### Task List Screen:
-![Server Up](screenshots/image1.png)
+## 🔧 Core Dependencies
 
-### Task Creation Screen:
-![Database Setup](screenshots/image2.png)
+```yaml
+dependencies:
+  flutter_riverpod: ^2.3.6    # State management
+  flutter_dotenv: ^5.1.0      # Environment variables
+  shared_preferences: ^2.2.0   # Local storage
+  http: ^1.1.0                 # API communication
+  uuid: ^4.5.1                 # Unique identifiers
+```
 
-### Task Details Screen:
-![Task Details Screen](screenshots/task_details.png)
+## 🌐 API Integration
 
-### Before creating tasks:
-![Assign Users Screen](screenshots/image3.pngg)
+The app communicates with a Laravel backend through RESTful APIs:
 
-### creating task:
-![Task Details Screen](screenshots/image4.png)
+**Authentication Endpoints:**
+- `POST /api/login` - User authentication
+- `POST /api/register` - User registration  
+- `POST /api/password/reset` - Password recovery
 
-### result:
-![Assign Users Screen](screenshots/image6.png)
+**Task Management:**
+- `GET /api/tasks` - Retrieve all tasks
+- `POST /api/tasks` - Create new task
+- `PUT /api/tasks/{id}` - Update task
+- `DELETE /api/tasks/{id}` - Delete task
 
-### Getting tasks:
-![Task Details Screen](screenshots/image5.png)
+**Staff Management:**
+- `GET /api/users` - Get available staff
+- `POST /api/users` - Add new staff member
+- `POST /api/tasks/{id}/assign` - Assign staff to task
 
-### Assign Users Screen:
-![Assign Users Screen](screenshots/assign_users.png)
+## 🤝 Contributing
 
+We welcome contributions! Here's how you can help:
 
-Contributing
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
 
-Fork the repository.
-Create a feature branch (git checkout -b feature/your-feature).
-Commit your changes (git commit -m 'Add your feature').
-Push to the branch (git push origin feature/your-feature).
-Open a pull request.
+## 📄 License
 
-License
-This project is licensed under the MIT License. See the LICENSE file for details.
-Contact
-For issues or questions, please open an issue on the GitHub repository or contact [your-email@example.com].
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+Having issues? We're here to help!
+
+- 📧 **Email**: [ochiengjeck@gmail.com](mailto:ochiengjeck@gmail.com)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/Ochiengjeck/jisort/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/Ochiengjeck/jisort/discussions)
+
+## 🌟 Show Your Support
+
+If you find Jisort helpful, please consider:
+- ⭐ Starring the repository
+- 🐛 Reporting bugs
+- 💡 Suggesting new features
+- 🤝 Contributing to the codebase
+
+---
+
+**Built with ❤️ using Flutter and Laravel**
